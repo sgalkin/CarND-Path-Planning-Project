@@ -1,0 +1,54 @@
+defaults: &defaults
+  docker:
+    - image: sgalkin/carnd-t2-dev:latest
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          command: |  
+            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release .
+            cmake --build .
+            ctest --output-on-failure
+            
+  coverage:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          command: |
+            cmake -G Ninja -DCMAKE_BUILD_TYPE=Coverage .
+            cmake --build .
+            ctest --output-on-failure
+            bash <(curl -s https://codecov.io/bash)
+            
+  image:
+    machine: true
+    steps:
+      - checkout
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run:
+          command: |
+            mkdir build
+            cd build
+            cmake .. -DLOCAL_BUILD=OFF -DDOCKER_BUILD=ON
+            make docker-release
+            make docker-push
+
+workflows:
+  version: 2
+  ci:
+    jobs:
+      - build
+      - coverage
+      - image:
+          requires:
+            - build
+            - coverage
+          filters:
+            branches:
+              only:
+                - master

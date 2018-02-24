@@ -1,26 +1,22 @@
-project(Path_Planning)
+project(t3p1)
+cmake_minimum_required(VERSION 2.8)
 
-cmake_minimum_required (VERSION 3.5)
+option(LOCAL_BUILD "enables local build" ON)
+option(DOCKER_BUILD "enables docker build" OFF)
 
-add_definitions(-std=c++11)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-set(CXX_FLAGS "-Wall")
-set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
+if(DOCKER_BUILD)
+  if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+    message(FATAL_ERROR "Inplace build is not supported for docker build. Please use separate directory.")
+  endif()
+  find_program(DOCKER_PATH docker)
+  if(NOT DOCKER_PATH)
+    message(FATAL_ERROR "Docker not found but DOCKER_BUILD is set")
+  endif()
+  include(EnableDockerBuild)
+endif()
 
-set(sources src/main.cpp)
-
-
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
-
-include_directories(/usr/local/include)
-include_directories(/usr/local/opt/openssl/include)
-link_directories(/usr/local/lib)
-link_directories(/usr/local/opt/openssl/lib)
-link_directories(/usr/local/Cellar/libuv/1.11.0/lib)
-
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
-
-
-add_executable(path_planning ${sources})
-
-target_link_libraries(path_planning z ssl uv uWS)
+if(LOCAL_BUILD)
+  include(EnableLocalBuild)
+endif()

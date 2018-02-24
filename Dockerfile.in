@@ -1,0 +1,12 @@
+FROM sgalkin/carnd-t2-dev as builder
+COPY .git /${CMAKE_PROJECT_NAME}.git
+
+WORKDIR /tmp/build
+RUN git clone /${CMAKE_PROJECT_NAME}.git /repo && \
+    cmake -DCMAKE_BUILD_TYPE=Release -GNinja /repo && \
+    cmake --build . && \
+    ctest --output-on-failure
+
+FROM sgalkin/carnd-t2
+COPY --from=builder /tmp/build/${CMAKE_PROJECT_NAME} /app
+ENTRYPOINT ["/app/${CMAKE_PROJECT_NAME}", "-p", "4567"]

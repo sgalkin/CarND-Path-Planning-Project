@@ -1,0 +1,12 @@
+sudo: required
+
+language: cpp
+
+services:
+  - docker
+
+script:
+  - mkdir build
+  - cd build
+  - cmake .. -DLOCAL_BUILD=OFF -DDOCKER_BUILD=ON -DCMAKE_BUILD_TYPE=Release
+  - cmake --build .
