@@ -3,6 +3,7 @@ set(TEST_NAME "Test")
 set(sources
   main.cpp
   test_io.cpp
+  test_frenet.cpp
   )
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
