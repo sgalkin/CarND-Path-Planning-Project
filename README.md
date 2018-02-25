@@ -1,5 +1,11 @@
-# CarND-Path-Planning-Project
-Self-Driving Car Engineer Nanodegree Program
+# Path Planning Project
+
+[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
+[![Build Status](https://semaphoreci.com/api/v1/sgalkin/carnd-t3p1/branches/master/shields_badge.svg)](https://semaphoreci.com/sgalkin/carnd-t3p1)
+[![codecov](https://codecov.io/gh/sgalkin/CarND-T3P1/branch/master/graph/badge.svg)](https://codecov.io/gh/sgalkin/CarND-T3P1)
+[![CircleCI](https://circleci.com/gh/sgalkin/CarND-T3P1.svg?style=svg)](https://circleci.com/gh/sgalkin/CarND-T3P1)
+
+---
    
 ### Simulator.
 You can download the Term3 Simulator which contains the Path Planning Project from the [releases tab (https://github.com/udacity/self-driving-car-sim/releases).
