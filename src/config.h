@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iomanip>
+#include <fstream>
 #include <chrono>
 #include "ProgramOptions.hxx"
 
@@ -21,8 +21,11 @@ struct Config {
     
   explicit Config(po::parser p)
     : port{uint16_t(p["port"].get().u32)}
-    , waypoints{p["waypoints"].get().string}
-  {}
+    , waypoints{p["waypoints"].get().string} {
+      if(!std::ifstream(waypoints.c_str()).good()) {
+        throw std::runtime_error("Unable to open file '" + waypoints + "'");
+      }
+    }
 
   static po::parser parser() {
     constexpr uint16_t port = 4567;
@@ -44,7 +47,7 @@ template<typename OS>
 OS& operator<< (OS& os, const Config& c) {
   os << "{"
      << "\"Port\":" << c.port << ","
-     << "\"Waypoints\":" << c.waypoints << ","
+     << "\"Waypoints\":\"" << c.waypoints << "\""
      << "}";
   return os;
 }

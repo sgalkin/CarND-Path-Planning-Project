@@ -9,4 +9,5 @@ RUN git clone /${CMAKE_PROJECT_NAME}.git /repo && \
 
 FROM sgalkin/carnd-t2
 COPY --from=builder /tmp/build/${CMAKE_PROJECT_NAME} /app
+COPY --from=builder /tmp/build/data /app/data
 ENTRYPOINT ["/app/${CMAKE_PROJECT_NAME}", "-p", "4567"]
