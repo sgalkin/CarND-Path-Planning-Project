@@ -4,7 +4,7 @@ defaults: &defaults
 
 version: 2
 jobs:
-  build:
+  release:
     <<: *defaults
     steps:
       - checkout
@@ -13,7 +13,17 @@ jobs:
             cmake -G Ninja -DCMAKE_BUILD_TYPE=Release .
             cmake --build .
             ctest --output-on-failure
-            
+
+  debug:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          command: |
+            cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug .
+            cmake --build .
+            ctest --output-on-failure
+
   coverage:
     <<: *defaults
     steps:
@@ -42,7 +52,8 @@ workflows:
   version: 2
   ci:
     jobs:
-      - build
+      - release
+      - debug
       - coverage
       - image:
           requires:
