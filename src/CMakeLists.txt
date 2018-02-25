@@ -1,12 +1,12 @@
 set(main main.cpp)
-# set(sources
-#   application.h
-#   compose.h
-#   config.h
+set(sources
+  application.h
+  compose.h
+  config.h
 #   control.h
 #   drive.h
-#   io.cpp
-#   io.h
+  io.cpp
+  io.h
 #   model.cpp
 #   model.h
 #   model_index.h
@@ -17,17 +17,17 @@ set(main main.cpp)
 #   polynomial.h
 #   processor.cpp
 #   processor.h
-#   protocol.cpp
-#   protocol.h
+   protocol.cpp
+   protocol.h
 #   solve.h
 #   solve_traits.h
 #   state.h
 #   stream_holder.h
 #   util.h
-#   )
+   )
 
-#add_library(lib${CMAKE_PROJECT_NAME} OBJECT ${sources})
-add_executable(${CMAKE_PROJECT_NAME} ${main}) # $<TARGET_OBJECTS:lib${CMAKE_PROJECT_NAME}>)
+add_library(lib${CMAKE_PROJECT_NAME} OBJECT ${sources})
+add_executable(${CMAKE_PROJECT_NAME} ${main} $<TARGET_OBJECTS:lib${CMAKE_PROJECT_NAME}>)
 target_link_libraries(${CMAKE_PROJECT_NAME}
   ${ZLIB_LIBRARIES}
 #  ${CPPAD_LIBRARIES}
