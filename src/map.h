@@ -13,8 +13,9 @@
 #include "point.h"
 
 class Map {
+  static constexpr size_t dimensions = 2;
   using KDTree = nanoflann::KDTreeSingleIndexAdaptor<
-    nanoflann::L2_Simple_Adaptor<float, Map>, Map, 2>;
+    nanoflann::L2_Simple_Adaptor<float, Map>, Map, dimensions>;
 
 public:
   using Record = std::tuple<Point, float, Point>;
@@ -23,7 +24,7 @@ public:
   
   template<typename I>
   Map(I begin, I end)
-    : index_{2 /*dim*/, *this, nanoflann::KDTreeSingleIndexAdaptorParams(8 /* max leaf */)} {
+    : index_{dimensions, *this, nanoflann::KDTreeSingleIndexAdaptorParams(8 /* max leaf */)} {
     float s_max = -std::numeric_limits<float>::infinity();
     std::for_each(begin, end, [this, &s_max](const typename I::value_type& v) {
         Point wp;
@@ -65,7 +66,7 @@ public:
   size_t nearest(Point p) const {
     // do a knn search
     nanoflann::KNNResultSet<float> result{1};
-    std::array<float, 2> q{{p.x, p.y}};
+    std::array<float, dimensions> q{{p.x, p.y}};
     size_t index{0};
     float distance{std::numeric_limits<float>::infinity()};
     result.init(&index, &distance);
@@ -85,10 +86,12 @@ public:
   // Returns the dim'th component of the idx'th point in the class:
   // Since this is inlined and the "dim" argument is typically an immediate value, the
   //  "if/else's" are actually solved at compile time.
-  inline float kdtree_get_pt(const size_t idx, int dim) const {
+  inline float kdtree_get_pt(const size_t idx, size_t dim) const {
+    if(idx >= waypoints_.size() || dim >= dimensions) {
+      throw std::out_of_range("kdtree_get_pt");
+    }    
     if(dim == 0) return waypoints_[idx].x;
     if(dim == 1) return waypoints_[idx].y;
-    assert(false);
     return std::numeric_limits<float>::infinity();
   }
 

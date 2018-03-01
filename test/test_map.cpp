@@ -35,3 +35,22 @@ TEST_CASE("Nearest") {
   REQUIRE(m.nearest(Point{-1, -1}) == 0);
   REQUIRE(m.nearest(Point{1, 1}) == 1);
 }
+
+TEST_CASE("Bad s-value") {
+  std::vector<Map::Record> data{
+    std::make_tuple(Point{0, 0}, 1, Point{0, 0}),
+    std::make_tuple(Point{0, 1}, 0, Point{0, 1})
+  };
+  std::unique_ptr<Map> m;
+  CHECK_THROWS(m.reset(new Map{begin(data), end(data)}));
+}
+
+TEST_CASE("KD out of range") {
+  std::vector<Map::Record> data{
+    std::make_tuple(Point{0, 0}, 0, Point{0, 0}),
+    std::make_tuple(Point{0, 1}, 1, Point{0, 1})
+  };
+  Map m{begin(data), end(data)};
+  CHECK_THROWS(m.kdtree_get_pt(data.size(), 0));
+  CHECK_THROWS(m.kdtree_get_pt(0, 42));
+}
