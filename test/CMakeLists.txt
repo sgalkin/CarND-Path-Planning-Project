@@ -3,6 +3,7 @@ set(BM_NAME "BM")
 
 set(sources
   main.cpp
+  test_compose.cpp
   test_io.cpp
   test_protocol.cpp
   test_frenet.cpp
