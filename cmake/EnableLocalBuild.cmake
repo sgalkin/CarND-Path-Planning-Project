@@ -11,7 +11,7 @@ if(CMAKE_COMPILER_IS_GNUCXX AND
   message(FATAL_ERROR "GCC version must be at least 5.4!")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -m64")
 
 find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
