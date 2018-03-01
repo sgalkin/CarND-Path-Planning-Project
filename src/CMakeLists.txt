@@ -3,6 +3,10 @@ set(sources
   application.h
   compose.h
   config.h
+  map.h
+  point.h
+  frenet.h
+  frenet.cpp
 #   control.h
 #   drive.h
   io.cpp
