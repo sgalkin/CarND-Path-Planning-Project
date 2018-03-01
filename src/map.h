@@ -5,7 +5,11 @@
 #include <limits>
 #include <tuple>
 #include <array>
+
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "nanoflann.hpp"
+#pragma GCC diagnostic pop
+
 #include "point.h"
 
 class Map {
