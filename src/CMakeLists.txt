@@ -7,12 +7,11 @@ set(sources
   point.h
   frenet.h
   frenet.cpp
-#   control.h
-#   drive.h
   io.cpp
   io.h
-#   model.cpp
-#   model.h
+  #   model.cpp
+  model.h
+  planner.h
 #   model_index.h
 #   model_index.cpp
 #   model_output.h
@@ -23,20 +22,14 @@ set(sources
 #   processor.h
    protocol.cpp
    protocol.h
-#   solve.h
-#   solve_traits.h
-#   state.h
-#   stream_holder.h
-#   util.h
+   util.h
    )
 
 add_library(lib${CMAKE_PROJECT_NAME} OBJECT ${sources})
 add_executable(${CMAKE_PROJECT_NAME} ${main} $<TARGET_OBJECTS:lib${CMAKE_PROJECT_NAME}>)
 target_link_libraries(${CMAKE_PROJECT_NAME}
   ${ZLIB_LIBRARIES}
-#  ${CPPAD_LIBRARIES}
   ${UWS_LIBRARIES}
-#  ${IPOPT_LIBRARIES}
   )
 
 set_target_properties(

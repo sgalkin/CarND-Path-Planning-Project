@@ -32,16 +32,13 @@ TEST_CASE("Circle") {
     auto r = dr(gen);
 
     auto p = c + r*Point{float(cos(a)), float(sin(a))};
-    Heading h;
-    h.x = p.x;
-    h.y = p.y;
-    h.theta = a + M_PI/2;
+    Heading h{p.x, p.y, float(a + M_PI/2)};
     
-    auto f = to::frenet(std::move(h), *m);
+    auto f = frenet::to(std::move(h), *m);
     REQUIRE(f.x == Approx(R*a).margin(10));
     REQUIRE(f.y == Approx(r - R).margin(0.05));
     
-    auto xy = to::xy(f, *m);
+    auto xy = frenet::from(f, *m);
     REQUIRE(p.x == Approx(xy.x).margin(10));
     REQUIRE(p.y == Approx(xy.y).margin(10));
   }
@@ -51,17 +48,14 @@ TEST_CASE("Current == 0") {
   float a = -0.0005/180*M_PI;
   float r = R - 2;
 
-  auto p = c + r*Point{float(cos(a)), float(sin(a))};
-  Heading h;
-  h.x = p.x;
-  h.y = p.y;
-  h.theta = a + M_PI/2;
+  auto p = c + r*Point{float(cos(a)), float(sin(a))}; 
+  Heading h{p.x, p.y, a + float(M_PI/2)};
     
-  auto f = to::frenet(std::move(h), *m);
+  auto f = frenet::to(std::move(h), *m);
   REQUIRE(f.x == Approx(R*a).margin(10));
   REQUIRE(f.y == Approx(r - R).margin(0.05));
     
-  auto xy = to::xy(f, *m);
+  auto xy = frenet::from(f, *m);
   REQUIRE(p.x == Approx(xy.x).margin(10));
   REQUIRE(p.y == Approx(xy.y).margin(10));
 }
@@ -71,16 +65,13 @@ TEST_CASE("Current == Last") {
   float r = R + 12;
 
   auto p = c + r*Point{float(cos(a)), float(sin(a))};
-  Heading h;
-  h.x = p.x;
-  h.y = p.y;
-  h.theta = a + M_PI/2;
+  Heading h{p.x, p.y, a + float(M_PI/2)};
     
-  auto f = to::frenet(std::move(h), *m);
+  auto f = frenet::to(std::move(h), *m);
   REQUIRE(f.x == Approx(R*a).margin(10));
   REQUIRE(f.y == Approx(r - R).margin(0.05));
     
-  auto xy = to::xy(f, *m);
+  auto xy = frenet::from(f, *m);
   REQUIRE(p.x == Approx(xy.x).margin(10));
   REQUIRE(p.y == Approx(xy.y).margin(10));
 }

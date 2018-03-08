@@ -21,29 +21,10 @@ inline std::size_t next(Heading h, const Map& m) {
   return closest;
 }
 }
-/*
-std::size_t ClosestWaypoint(float x, float y,
-                            const std::vector<float> &maps_x,
-                            const std::vector<float> &maps_y) {
-  float closestLen = std::numeric_limits<float>::infinity();
-  std::size_t closestWaypoint = 0;
 
-  for(std::size_t i = 0; i < maps_x.size(); ++i) {
-    float map_x = maps_x[i];
-    float map_y = maps_y[i];
-    float dist = distanceSquare(x,y,map_x,map_y);
-    if(dist < closestLen) {
-      closestLen = dist;
-      closestWaypoint = i;
-    }
-  }
-  return closestWaypoint;
-}
-*/
-
-namespace to {
+namespace frenet {
 // Transform from Cartesian x,y coordinates to Frenet s,d coordinates
-Point frenet(Heading h, const Map& m) {
+Point to(Heading h, const Map& m) {
   std::size_t next_wp = next(h, m);
   std::size_t prev_wp = next_wp == 0 ? m.size() - 1 : next_wp - 1;
 
@@ -67,7 +48,7 @@ Point frenet(Heading h, const Map& m) {
 }
 
 // Transform from Frenet s,d coordinates to Cartesian x,y
-Point xy(Point sd, const Map& m) {
+Point from(Point sd, const Map& m) {
   size_t wp1 = m.s_upper_bound(sd.x);
   size_t wp2 = wp1 == m.size() - 1 ? 0 : wp1 + 1;
 

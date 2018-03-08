@@ -1,15 +1,11 @@
 #include "io.h"
 
-//#include <cmath>
-#include <Eigen/Core>
-
+#include <algorithm>
 #include "json.hpp"
-//#include "state.h"
-//#include "control.h"
-//#include "util.h"
+#include "util.h"
 
 using json = nlohmann::json;
-#if 0
+
 namespace {
 json extract(std::string message) {
   auto j = json::parse(std::move(message));
@@ -19,54 +15,76 @@ json extract(std::string message) {
   return j[1];
 }
 
-template<typename T>
-std::vector<typename T::Scalar> to_vector(const T& src) {
-  static_assert(T::RowsAtCompileTime == 1 ||
-                T::ColsAtCompileTime == 1, "src is not a vector");
-  assert(src.rows() == 1 || src.cols() == 1);
-  return std::vector<typename T::Scalar>{ src.data(), src.data() + src.size() };
+template<typename U, typename V>
+std::vector<U> to_vector(const std::vector<V>& p, std::function<U(const V&)> x) {
+  std::vector<U> r(p.size());
+  std::transform(begin(p), end(p), begin(r), x);
+  return r;
 }
 
-Eigen::VectorXd to_vector(std::vector<double>&& v) {
-  return Eigen::Map<Eigen::VectorXd>(v.data(), v.size());
+std::vector<Point> to_vector(const std::vector<float>&& x,
+                             const std::vector<float>&& y) {
+  assert(x.size() == y.size());
+  std::vector<Point> r(x.size());
+  std::transform(begin(x), end(x), begin(y), begin(r),
+                 [](float x, float y) { return Point{x, y}; });
+  return r;
 }
+
+Ego ego(const json& j) {
+  return Ego{
+    Heading{
+      j["x"].get<float>(), j["y"].get<float>(), j["yaw"].get<float>()
+    },
+    mph_to_ms(j["speed"].get<float>()),
+    Point{
+      j["s"].get<float>(), j["d"].get<float>()
+    }
+  };
 }
-#endif 
-std::string Json::operator()(std::string message) {
-  return message;
-  #if 0
-  auto j = extract(std::move(message));
-  if(j["ptsx"].size() != j["ptsy"].size())
-    throw std::runtime_error("ptsx/ptsy size mismatch");
 
-  double psi = j["psi"].get<double>();
-//  double psiu = j["psi_unity"].get<double>();
-  Eigen::MatrixXd wp(j["ptsx"].size(), int(Axis::Plain));
-  wp.col(Axis::X) = to_vector(j["ptsx"]);
-  wp.col(Axis::Y) = to_vector(j["ptsy"]);
+Path path(const json& j) {
+  const auto& x = j["previous_path_x"];
+  const auto& y = j["previous_path_y"]; 
+  if(x.size() != y.size())
+    throw std::runtime_error("previous_path_x/previous_path_y size mismatch");
+  return to_vector(x, y);
+}
 
-  double speed = j["speed"].get<double>();
-  double angle = j["steering_angle"].get<double>();
-  double throttle = j["throttle"].get<double>();
-  Eigen::Vector2d p(j["x"].get<double>(), j["y"].get<double>());
+Point destination(const json& j) {
+  return Point{
+    j["end_path_s"].get<float>(),
+    j["end_path_d"].get<float>()
+  };
+}
+
+Fusion::value_type vehicle(const std::vector<float>& v) {
+  if(v.size() < 7) {
+    throw std::runtime_error("unexpected fusion object");
+  }
   
-  return State(psi, /*psiu,*/ speed, std::move(p), Control(angle, throttle), std::move(wp));
-  #endif
+  return Fusion::value_type{
+    v[0],
+    Vehicle{Point{v[1], v[2]}, Point{v[3], v[4]}, Point{v[5], v[6]}}
+  };
 }
-  #if 0
+  
+Fusion fusion(const json& j) {
+  const auto& o = j["sensor_fusion"];
+  Fusion f;
+  std::transform(begin(o), end(o), std::inserter(f, end(f)), vehicle);
+  return f;
+}
+}
 
-std::string Json::operator()(std::string c) const {
-  return c;
+Model Json::operator()(std::string message) const {
+  auto j = extract(std::move(message));
+  return Model{ego(j), path(j), destination(j), fusion(j)};
+}
+
+std::string Json::operator()(Path path) const {
   json j;
-  j["steering_angle"] = c.angle;
-  j["throttle"] = c.throttle;
-
-  j["mpc_x"] = to_vector(c.prediction.col(Axis::X));
-  j["mpc_y"] = to_vector(c.prediction.col(Axis::Y));
-   
-  j["next_x"] = to_vector(c.wp.col(Axis::X));
-  j["next_y"] = to_vector(c.wp.col(Axis::Y));
+  j["next_x"] = to_vector<float, Point>(path, [](const Point& p) { return p.x; });
+  j["next_y"] = to_vector<float, Point>(path, [](const Point& p) { return p.y; });
   return j.dump();
-
 }
-#endif

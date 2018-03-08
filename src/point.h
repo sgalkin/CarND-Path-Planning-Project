@@ -19,6 +19,11 @@ OS& operator<< (OS& os, const Point&p ) {
 
 
 struct alignas(16) Heading : Point {
+  Heading(float x, float y, float theta)
+    : Point{x, y}
+    , theta{theta}
+  {}
+
   float theta;
 };
 

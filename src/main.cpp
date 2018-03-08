@@ -7,32 +7,19 @@
 #include "config.h"
 #include "application.h"
 #include "protocol.h"
-//#include "processor.h"
 #include "compose.h"
-//#include "stream_holder.h"
+#include "planner.h"
 #include "io.h"
-//#include "mpc.h"
 
 namespace {
-/*  
-std::unique_ptr<StreamHolder> stream;
-*/
-  struct Dummy {std::string operator()(std::string f){return f;}};
-Compose<Dummy/*MPC, Delay, Rotate*/>
+Compose<Planner>
 pipeline(Config ) {
   // TODO: support reconfiguration
-  /*
-  if(!stream) {
-    stream.reset(c.output.empty() ?
-                 new StreamHolder(std::cout) :
-                 new StreamHolder(c.output));
-  }
-  */
   return {
+    Planner{},
 /*    MPC{c.depth, c.dt, *stream},
     Delay{c.delay},
     Rotate{}*/
-    Dummy{}
   }; // applied from right to left
 }
 
@@ -47,6 +34,7 @@ void run(Config c) {
   h.onMessage([&app, c](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode) {
     try {
       auto message = std::string(data, length);
+      std::cerr << ">>>\n" << message << "\n";
       auto response = app->ProcessMessage(std::move(message));
       ws.send(response.data(), response.length(), uWS::OpCode::TEXT);
     } catch(std::runtime_error& e) {

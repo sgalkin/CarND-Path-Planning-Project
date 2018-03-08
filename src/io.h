@@ -1,10 +1,9 @@
 #pragma once
 
 #include <string>
-//#include "state.h"
-//#include "control.h"
+#include "model.h"
 
 struct Json {
-//  std::string operator()(std::string json) const;
-  std::string operator()(std::string control);
+  Model operator()(std::string json) const;
+  std::string operator()(Path path) const;
 };
