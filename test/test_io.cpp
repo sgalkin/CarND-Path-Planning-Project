@@ -10,7 +10,7 @@ namespace {
     "[\"telemetry\", {" 
     "\"x\": 909.48,"
     "\"y\": 1128.67,"
-    "\"yaw\": -4,"
+    "\"yaw\": -90,"
     "\"speed\": 30,"
     "\"s\": 124.8336,"
     "\"d\": 6.164833,"
@@ -30,7 +30,7 @@ TEST_CASE("JsonParse") {
   auto m = j(message);
   REQUIRE(m.ego.heading.x == Approx(909.48));
   REQUIRE(m.ego.heading.y == Approx(1128.67));
-  REQUIRE(m.ego.heading.theta == Approx(-4));
+  REQUIRE(m.ego.heading.theta == Approx(-M_PI/2));
   REQUIRE(m.ego.velocity == Approx(13.4112));
   REQUIRE(m.ego.frenet.x == Approx(124.8336));
   REQUIRE(m.ego.frenet.y == Approx(6.164833));

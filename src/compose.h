@@ -11,7 +11,10 @@ private:
 
 public:
   Compose() : head_(H()), tail_(T()...) {}  
-  Compose(H h, T... t) : head_(h), tail_(t...) {}
+  Compose(H h, T... t)
+    : head_(std::forward<H>(h))
+    , tail_(std::forward<T>(t)...)
+  {}
 
   template <typename... Args>
   auto operator() (Args&&... args) ->
@@ -29,7 +32,7 @@ private:
   F f_;
 
 public:
-  Compose(F f = F()) : f_(f) {}
+  Compose(F f = F()) : f_(std::forward<F>(f)) {}
 
   template <typename... Args>
   auto operator() (Args&&... args) ->

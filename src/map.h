@@ -74,8 +74,8 @@ public:
     return index;
   }
 
-  size_t s_upper_bound(float s) const {
-    auto it = std::upper_bound(std::begin(s_), std::end(s_), s);
+  size_t s_lower_bound(float s) const {
+    auto it = std::lower_bound(std::begin(s_), std::end(s_), s);
     return it == std::end(s_) ? s_.size() - 1 : distance(std::begin(s_), it);
   }
   

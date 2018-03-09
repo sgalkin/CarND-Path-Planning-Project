@@ -49,7 +49,8 @@ Point to(Heading h, const Map& m) {
 
 // Transform from Frenet s,d coordinates to Cartesian x,y
 Point from(Point sd, const Map& m) {
-  size_t wp1 = m.s_upper_bound(sd.x);
+  size_t p = m.s_lower_bound(sd.x);
+  size_t wp1 = p == 0 ? m.size() - 1 : p - 1;
   size_t wp2 = wp1 == m.size() - 1 ? 0 : wp1 + 1;
 
   Point h = m.waypoint(wp2) - m.waypoint(wp1);

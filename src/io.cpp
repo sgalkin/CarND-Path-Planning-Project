@@ -34,7 +34,8 @@ std::vector<Point> to_vector(const std::vector<float>&& x,
 Ego ego(const json& j) {
   return Ego{
     Heading{
-      j["x"].get<float>(), j["y"].get<float>(), j["yaw"].get<float>()
+      j["x"].get<float>(), j["y"].get<float>(),
+      degrees_to_radians(j["yaw"].get<float>())
     },
     mph_to_ms(j["speed"].get<float>()),
     Point{

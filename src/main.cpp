@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <fstream>
 
 #include <uWS/uWS.h>
 
@@ -12,14 +13,21 @@
 #include "io.h"
 
 namespace {
+
+std::unique_ptr<Map> load(const std::string& name) {
+  std::ifstream f{name};
+  return std::unique_ptr<Map>{
+    new Map{
+      std::istream_iterator<Map::Record>(f),
+      std::istream_iterator<Map::Record>()
+    }
+  };
+}
+ 
 Compose<Planner>
-pipeline(Config ) {
-  // TODO: support reconfiguration
+pipeline(Config config) {
   return {
-    Planner{},
-/*    MPC{c.depth, c.dt, *stream},
-    Delay{c.delay},
-    Rotate{}*/
+    Planner{load(config.waypoints)},
   }; // applied from right to left
 }
 
@@ -34,7 +42,6 @@ void run(Config c) {
   h.onMessage([&app, c](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode) {
     try {
       auto message = std::string(data, length);
-      std::cerr << ">>>\n" << message << "\n";
       auto response = app->ProcessMessage(std::move(message));
       ws.send(response.data(), response.length(), uWS::OpCode::TEXT);
     } catch(std::runtime_error& e) {
