@@ -84,8 +84,11 @@ TEST_CASE("JsonParse") {
     REQUIRE(m.path[1].x == Approx(11));
     REQUIRE(m.path[1].y == Approx(21));
 
-    REQUIRE(m.destination.x == Approx(1044));
-    REQUIRE(m.destination.y == Approx(-2));
+    REQUIRE(m.current_destination.x == Approx(1044));
+    REQUIRE(m.current_destination.y == Approx(-2));
+
+    REQUIRE(m.next_destination.x == Approx(1044));
+    REQUIRE(m.next_destination.y == Approx(-2));
 
     REQUIRE(m.fusion.size() == 2);
     REQUIRE(m.fusion.at(0).position.x == Approx(815.2019));

@@ -5,13 +5,18 @@ set(sources
   config.h
   map.h
   point.h
-  frenet.h
-  frenet.cpp
+  coordinates.h
+  coordinates.cpp
   io.cpp
   io.h
   #   model.cpp
+  lane.h
   model.h
+  path.h
   planner.h
+  planner.cpp
+
+  ../test/reference_frenet.cpp
 #   model_index.h
 #   model_index.cpp
 #   model_output.h

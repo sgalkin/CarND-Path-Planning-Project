@@ -85,7 +85,7 @@ Model Json::operator()(std::string message) const {
 
 std::string Json::operator()(Path path) const {
   json j;
-  j["next_x"] = to_vector<float, Point>(path, [](const Point& p) { return p.x; });
-  j["next_y"] = to_vector<float, Point>(path, [](const Point& p) { return p.y; });
+  j["next_x"] = extract(path, [](const Point& p) { return p.x; });
+  j["next_y"] = extract(path, [](const Point& p) { return p.y; });
   return j.dump();
 }

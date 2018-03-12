@@ -1,4 +1,4 @@
-#include "frenet.h"
+#include "coordinates.h"
 
 #include <cmath>
 #include <limits>
@@ -47,6 +47,10 @@ Point to(Heading h, const Map& m) {
   return Point{s, d};
 }
 
+Point to(Point p, float h, const Map& m) {
+  return to(Heading{p.x, p.y, h}, m);
+}
+
 // Transform from Frenet s,d coordinates to Cartesian x,y
 Point from(Point sd, const Map& m) {
   size_t p = m.s_lower_bound(sd.x);
@@ -62,5 +66,24 @@ Point from(Point sd, const Map& m) {
 
   float perp = heading - M_PI/2;
   return seg + sd.y*Point{float(cos(perp)), float(sin(perp))};
+}
+}
+
+namespace local {
+Point to(Point p, Heading origin) {
+  auto dp = p - origin;
+  return Point{
+    // TODO: -?
+    std::cos(-origin.theta)*dp.x - std::sin(-origin.theta)*dp.y,
+    std::sin(-origin.theta)*dp.x + std::cos(-origin.theta)*dp.y
+  };
+}
+
+Point from(Point p, Heading origin) {
+  Point dr{
+    std::cos(origin.theta)*p.x - std::sin(origin.theta)*p.y,
+    std::sin(origin.theta)*p.x + std::cos(origin.theta)*p.y
+  };
+  return dr + origin;
 }
 }

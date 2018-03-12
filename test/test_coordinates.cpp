@@ -4,7 +4,7 @@
 #include "catch.hpp"
 
 #include "map.h"
-#include "frenet.h"
+#include "coordinates.h"
 
 namespace {
   constexpr float R = 1000;
@@ -74,4 +74,70 @@ TEST_CASE("Current == Last") {
   auto xy = frenet::from(f, *m);
   REQUIRE(p.x == Approx(xy.x).margin(10));
   REQUIRE(p.y == Approx(xy.y).margin(10));
+}
+
+TEST_CASE("Cartesian") {
+  Point p1{0, 0};
+  Point p2{2, 0};
+  Point p3{2, 2};
+  Point p4{0, 2};
+
+  Heading h{1, 1, M_PI/4};
+
+  SECTION("Shift") {
+    Heading h{1, 1, 0};
+ 
+    auto c1 = local::to(p1, h);
+    auto c2 = local::to(p2, h);
+    auto c3 = local::to(p3, h);
+    auto c4 = local::to(p4, h);
+    auto cc = local::to(h, h);
+    
+    REQUIRE(c1.x == Approx(-1));
+    REQUIRE(c1.y == Approx(-1));
+    REQUIRE(c2.x == Approx(1));
+    REQUIRE(c2.y == Approx(-1));
+    REQUIRE(c3.x == Approx(1));
+    REQUIRE(c3.y == Approx(1));
+    REQUIRE(c4.x == Approx(-1));
+    REQUIRE(c4.y == Approx(1));
+    REQUIRE(cc.x == Approx(0));
+    REQUIRE(cc.y == Approx(0));
+  }
+  
+  SECTION("Forward") {
+    auto c1 = local::to(p1, h);
+    auto c2 = local::to(p2, h);
+    auto c3 = local::to(p3, h);
+    auto c4 = local::to(p4, h);
+    auto cc = local::to(h, h);
+    
+    REQUIRE(c1.x == Approx(-std::sqrt(2)));
+    REQUIRE(c1.y == Approx(0));
+    REQUIRE(c2.x == Approx(0));
+    REQUIRE(c2.y == Approx(-std::sqrt(2)));
+    REQUIRE(c3.x == Approx(std::sqrt(2)));
+    REQUIRE(c3.y == Approx(0));
+    REQUIRE(c4.x == Approx(0));
+    REQUIRE(c4.y == Approx(std::sqrt(2)));
+    REQUIRE(cc.x == Approx(0));
+    REQUIRE(cc.y == Approx(0));
+  }
+  
+  SECTION("Reversible") {
+    Point c1{local::from(local::to(p1, h), h)};
+    Point c2{local::from(local::to(p2, h), h)};
+    Point c3{local::from(local::to(p3, h), h)};
+    Point c4{local::from(local::to(p4, h), h)};
+
+    // epsilon doen't work on 0s
+    REQUIRE(c1.x == Approx(p1.x).margin(1e-5));
+    REQUIRE(c1.y == Approx(p1.y).margin(1e-5));
+    REQUIRE(c2.x == Approx(p2.x).margin(1e-5));
+    REQUIRE(c2.y == Approx(p2.y).margin(1e-5));
+    REQUIRE(c3.x == Approx(p3.x).margin(1e-5));
+    REQUIRE(c3.y == Approx(p3.y).margin(1e-5));
+    REQUIRE(c4.x == Approx(p4.x).margin(1e-5));
+    REQUIRE(c4.y == Approx(p4.y).margin(1e-5));
+  }
 }

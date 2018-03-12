@@ -6,8 +6,9 @@ set(sources
   test_compose.cpp
   test_io.cpp
   test_protocol.cpp
-  test_frenet.cpp
+  test_coordinates.cpp
   test_map.cpp
+  test_lane.cpp
   )
 
 set(benchmark

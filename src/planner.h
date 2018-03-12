@@ -1,10 +1,62 @@
 #pragma once
 
+#include <vector>
+#include <memory>
+#include "point.h"
 #include "map.h"
-#include "util.h"
-#include "frenet.h"
-#include "limits.h"
 #include "model.h"
+
+#include "coordinates.h"
+#include "lane.h"
+
+template<size_t Offset, size_t Step, size_t Count>
+class KeepLanePolicy {
+public:
+  explicit KeepLanePolicy(const Heading& h, size_t target, const Map& m)
+  //    : lane_{find_lane(frenet::to(h, m).y)}
+    : lane_(target)
+    , map_(m)
+  {}
+
+  Path operator()(Path p) const {
+    assert(p.size() > 1);
+    float s = frenet::to(*p.rbegin(), heading(*next(p.rbegin()), *p.begin()), map_).x;
+    s += Offset;
+    for(size_t i = 0; i < Count; ++i) {
+      p.push_back(frenet::from(Point{s += Step, lane_center(lane_)}, map_));
+    }
+    return p;
+  }
+  
+private:
+  size_t lane_;
+  const Map& map_;
+};
+
+template<size_t Offset, size_t Step>
+class ChangeLanePolicy {
+public:
+  explicit ChangeLanePolicy(const Heading& h, size_t target, const Map& m)
+    : lane_{find_lane(frenet::to(h, m).y)}
+    , target_(target)
+    , map_(m)
+  {}
+
+  Path operator()(Path p) const {
+    assert(p.size() > 1);
+    float s = frenet::to(*p.rbegin(), heading(*next(p.rbegin()), *p.begin()), map_).x;
+    s += Offset;
+    p.push_back(frenet::from(Point{s += Step, lane_center(lane_)}, map_));
+    p.push_back(frenet::from(Point{s += Step, (lane_center(lane_) + lane_center(target_)) / 2.f}, map_));
+    p.push_back(frenet::from(Point{s += Step, lane_center(target_)}, map_));
+    return p;
+  }
+  
+private:
+  size_t lane_;
+  size_t target_;
+  const Map& map_;  
+};
 
 class Planner {
 public:
@@ -12,18 +64,9 @@ public:
     : map_(std::move(map))
   {}
   
-  Path operator()(Model m) {
-    Path p;
-
-    float s = m.ego.frenet.x;
-    float d = m.ego.frenet.y;
-    for(size_t i = 0; i < 30; ++i) {
-      Point next{s += 0.98f * limits::speed * limits::step.count(), d};
-      p.emplace_back(frenet::from(std::move(next), *map_));
-    }
-    return p;
-  }
+  Path operator()(Model m);
 
 private:
+//  size_t lane_{size_t(-1)};
   std::unique_ptr<Map> map_;
 };

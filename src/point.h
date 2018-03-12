@@ -24,6 +24,11 @@ struct alignas(16) Heading : Point {
     , theta{theta}
   {}
 
+  Heading(Point p, float theta)
+    : Point{std::move(p)}
+    , theta{theta}
+  {}
+
   float theta;
 };
 
@@ -34,7 +39,7 @@ IS& operator>> (IS& is, Heading& h) {
 
 template<typename OS>
 OS& operator<< (OS& os, const Heading& h) {
-  return os << static_cast<const Heading&>(h) << ";theta=" << h.theta;
+  return os << static_cast<const Point&>(h) << ";theta=" << h.theta;
 }
 
 
@@ -46,10 +51,17 @@ inline Point operator* (float lhs, Point rhs) {
   return Point{lhs * rhs.x, lhs * rhs.y };
 }
 
-inline Point operator- (Point lhs, Point rhs) {
-  return lhs + (-1)*rhs;
+inline Point operator- (Point lhs) {
+  return Point{-lhs.x, -lhs.y};
 }
 
+inline Point operator- (Point lhs, Point rhs) {
+  return lhs + (-rhs);
+}
+
+inline Heading operator- (Heading lhs) {
+  return Heading{-lhs.x, -lhs.y, -lhs.theta};
+}
 
 inline float distanceSquare(Point x, Point y) {
   auto d = x - y;
@@ -57,5 +69,16 @@ inline float distanceSquare(Point x, Point y) {
 }
 
 inline float distance(Point x, Point y) {
-  return sqrt(distanceSquare(x, y));
+  return std::sqrt(distanceSquare(x, y));
 } 
+
+inline float heading(Point src, Point dst) {
+  return std::atan2(dst.y-src.y, dst.x-src.x);
+}
+
+inline float magnitude(Point p) {
+  return distance(p, Point{0, 0});
+}
+
+
+
