@@ -16,7 +16,6 @@ set(sources
   planner.h
   planner.cpp
 
-  ../test/reference_frenet.cpp
 #   model_index.h
 #   model_index.cpp
 #   model_output.h
