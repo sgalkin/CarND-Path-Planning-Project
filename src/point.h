@@ -9,7 +9,8 @@ struct alignas(16) Point {
 
 template<typename IS>
 IS& operator>> (IS& is, Point& p) {
-  return is >> p.x >> p.y;
+  is >> p.x >> p.y;
+  return is;
 }
 
 template<typename OS>
@@ -51,6 +52,10 @@ inline Point operator* (float lhs, Point rhs) {
   return Point{lhs * rhs.x, lhs * rhs.y };
 }
 
+inline Point operator* (Point lhs, float rhs) {
+  return rhs * std::move(lhs);
+}
+
 inline Point operator- (Point lhs) {
   return Point{-lhs.x, -lhs.y};
 }
@@ -72,9 +77,14 @@ inline float distance(Point x, Point y) {
   return std::sqrt(distanceSquare(x, y));
 } 
 
-inline float heading(Point src, Point dst) {
-  return std::atan2(dst.y-src.y, dst.x-src.x);
+inline float heading(Point src) {
+  return std::atan2(src.y, src.x);
 }
+
+inline float heading(Point src, Point dst) {
+  return heading(dst - src);
+}
+
 
 inline float magnitude(Point p) {
   return distance(p, Point{0, 0});

@@ -2,10 +2,10 @@
 
 #include <algorithm>
 #include <vector>
-#include "util.h"
 
-using Destination = Point;
-using Path = std::vector<Point>;
+#include "point.h"
+#include "model.h"
+#include "util.h"
 
 inline Point drive(const Point& p, const Point& v, Timestamp t) {
   return Point{

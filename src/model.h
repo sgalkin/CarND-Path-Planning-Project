@@ -3,7 +3,6 @@
 #include <vector>
 #include <unordered_map>
 #include "point.h"
-#include "path.h"
 
 struct Ego {
   Ego(Heading h, double v, Point f)
@@ -29,21 +28,20 @@ struct Vehicle {
   const Point frenet;
 };
 
+using Destination = Point;
+using Path = std::vector<Point>;
 using Fusion = std::unordered_map<size_t, Vehicle>;
-
 
 struct Model {
   Model(Ego e, Path p, Destination d, Fusion f)
     : ego(std::move(e))
     , path(std::move(p))
-    , current_destination(std::move(d))
-    , next_destination(current_destination)
+    , destination(std::move(d))
     , fusion(std::move(f))
   {}
   
   const Ego ego;
   const Path path;
-  const Destination current_destination;
-  Destination next_destination;
+  const Destination destination;
   const Fusion fusion;
 };

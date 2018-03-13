@@ -1,6 +1,7 @@
 #include "io.h"
 
 #include <algorithm>
+#include "path.h"
 #include "json.hpp"
 #include "util.h"
 

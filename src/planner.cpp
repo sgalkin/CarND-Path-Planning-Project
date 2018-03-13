@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iterator>
 #include <spline.h>
+#include "point.h"
 #include "util.h"
 #include "limits.h"
 
@@ -22,21 +23,48 @@ tk::spline spline(const Path& p) {
 
 float v_ref = 0;
 //  size_t clane = (size_t)-1;
-  size_t lane = (size_t)1;
+size_t lane = (size_t)1;
   
 bool transit = false;  
 }
 
+std::vector<Vehicle> estimate(const Fusion& f, Timestamp ts, const Map& map) {
+  std::vector<Vehicle> e;
+  std::transform(begin(f), end(f), std::back_inserter(e),
+                 [ts, &map](const Fusion::value_type& kv) {
+                   auto p = drive(kv.second.position, kv.second.velocity, ts);
+                   auto f = frenet::to(p, heading(kv.second.velocity), map);
+                   return Vehicle{ std::move(p), kv.second.velocity, std::move(f) };
+                 });
+  return e;
+}
+
+
 Path Planner::operator()(Model m) {
-//  std::cout << "EGO:" << m.ego.heading
-//            << " f:" << m.ego.frenet
-//            << " ps:" << m.path.size() << std::endl;
+  auto ml = find_lane(/*m.ego.frenet.y*/m.destination.y);
+  std::cout << "EGO:" << m.ego.heading
+            << " f:" << m.ego.frenet
+            << " ps:" << m.path.size()
+            << " ml:" << find_lane(m.ego.frenet.y)
+            << " mlf:" << ml
+            << std::endl;
+  
+  auto e = estimate(m.fusion, limits::step*m.path.size(), *map_);
+  auto ll = evaluate(m.destination, std::move(e));
+  size_t i = 0;
+  for(const auto& d: ll) {
+    std::cerr << (ml == i++ ? "* " : "  ")
+              << "fwl=" << d.forward_limit
+              << ";fwv=" << d.forward_velocity
+              << ";bwl=" << d.backward_limit
+              << ";bwv=" << d.backward_velocity
+              << "\n";
+  }
 
   bool slow_down = false;
   std::vector<bool> lanes(true, 3);
 
-  auto myl = find_lane(m.ego.frenet.y);
-  transit = myl != lane;
+  transit = ml != lane;
   //if(!transit) clane = tlane;
   
   for(const auto& kv: m.fusion) {
@@ -48,14 +76,14 @@ Path Planner::operator()(Model m) {
     auto v = magnitude(kv.second.velocity);
     auto s = kv.second.frenet.x + v * limits::step.count() * m.path.size();
 
-    if((s > m.current_destination.x && s - m.current_destination.x < 30) ||
-       (s <= m.current_destination.x && m.current_destination.x - s < 20))
+    if((s > m.destination.x && s - m.destination.x < 30) ||
+       (s <= m.destination.x && m.destination.x - s < 20))
       lanes[l] = false;
     
-    if(l == myl &&
-       s > m.current_destination.x &&
-       s - m.current_destination.x < /*limits::safe_gap*/30) {
-      std::cerr << "Car ahead " << s - m.current_destination.x << " at speed: " << v << "\n";
+    if(l == ml &&
+       s > m.destination.x &&
+       s - m.destination.x < /*limits::safe_gap*/30) {
+      std::cerr << "Car ahead " << s - m.destination.x << " at speed: " << v << "\n";
       
       slow_down = true;
 
@@ -63,7 +91,7 @@ Path Planner::operator()(Model m) {
         auto dv = std::max((v_ref - v)/32.f, 0.1f);
         v_ref = std::max(v_ref - dv, v);
       }
-      if(s - m.current_destination.x < 10) {
+      if(s - m.destination.x < 10) {
         std::cerr << "Slowing down!\n";
         // emergence break
         v_ref = v;
@@ -76,40 +104,44 @@ Path Planner::operator()(Model m) {
   assert(p.size() > 1);
   Heading local_origin{*p.rbegin(), heading(*next(p.rbegin()), *p.rbegin())};
 
-  Path a=p;
+  //Path a=p;
   bool change = false;
-  float sss = frenet::to(*p.rbegin(), heading(*next(p.rbegin()), *p.begin()), *map_).x;
-  sss += 10;
+  //float sss = frenet::to(*p.rbegin(), heading(*next(p.rbegin()), *p.begin()), *map_).x;
+  //sss += 10;
   if(!transit && slow_down) {
     for(int i = -1; i <= 1; ++i) {
-      if((myl == 0 && i == -1) || (myl == 2 && i == +1)) continue;
-      if(lanes[myl+i]) {
+      if((ml == 0 && i == -1) || (ml == 2 && i == +1)) continue;
+      if(lanes[ml+i]) {
         std::cerr << "changing lanes!" << std::endl;
 //        lane
-
-        //a = append(std::move(p), ChangeLanePolicy<10, 30>(m.ego.heading, myl+i, *map_));
+/*
         a.push_back(frenet::from(Point{sss += 30, lane_center(lane)}, *map_));
-        a.push_back(frenet::from(Point{sss += 30, (lane_center(lane) + lane_center(myl+i)) / 2.f}, *map_));
-        a.push_back(frenet::from(Point{sss += 30, lane_center(myl+i)}, *map_));
-        lane = myl+i;
+        a.push_back(frenet::from(Point{sss += 30, (lane_center(lane) + lane_center(ml+i)) / 2.f}, *map_));
+        a.push_back(frenet::from(Point{sss += 30, lane_center(ml+i)}, *map_));
+        lane = ml+i;
+*/
+        Path a = anchor(local_origin, ml, ml+i, *map_);
+        std::move(begin(a), end(a), std::back_inserter(p));
         change = true;
         transit = true;
+        lane = ml+i;
         //slow_down = false;
         break;
       }
     }
   }
   if(!change) {
-//    a = append(std::move(p), KeepLanePolicy<10, 30, 3>(m.ego.heading, *map_));
-    for(size_t i = 0; i < 3; ++i) {
-      a.push_back(frenet::from(Point{sss += 30, lane_center(lane)}, *map_));
-    }
+    //for(size_t i = 0; i < 3; ++i) {
+      //a.push_back(frenet::from(Point{sss += 30, lane_center(lane)}, *map_));
+    //}
+    Path a = anchor(local_origin, ml, ml, *map_);
+    std::move(begin(a), end(a), std::back_inserter(p));
   }
-  std::transform(begin(a), end(a), begin(a),
+  std::transform(begin(p), end(p), begin(p),
                  [local_origin](const Path::value_type& p) {
                    return local::to(p, local_origin);
                  });
-  auto s = spline(std::move(a));
+  auto s = spline(std::move(p));
   
   // speed control
   if(!slow_down && v_ref < 0.98f*limits::speed) {

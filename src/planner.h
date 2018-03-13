@@ -2,12 +2,14 @@
 
 #include <vector>
 #include <memory>
+
 #include "point.h"
 #include "map.h"
 #include "model.h"
-
+#include "path.h"
 #include "coordinates.h"
 #include "lane.h"
+#include <iostream>
 
 template<size_t Offset, size_t Step, size_t Count>
 class KeepLanePolicy {
@@ -57,6 +59,24 @@ private:
   size_t target_;
   const Map& map_;  
 };
+
+inline Path anchor(Heading src, uint8_t lane, uint8_t target, const Map& m) {
+  constexpr float offset = 6;
+  constexpr float horizon = 60;
+  constexpr size_t steps = 5;
+
+  float base = frenet::to(src, m).x;
+
+  Path p;
+  for(size_t i = 0; i < steps; ++i) {
+    p.emplace_back(frenet::from(Point{
+      base + offset + i*horizon/(steps - 1),
+      float(steps - 1 - i)/(steps - 1)*lane_center(lane) +
+      float(i)/(steps - 1)*lane_center(target)
+        }, m));
+  }
+  return p;
+}
 
 class Planner {
 public:

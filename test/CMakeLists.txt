@@ -9,6 +9,8 @@ set(sources
   test_coordinates.cpp
   test_map.cpp
   test_lane.cpp
+  test_point.cpp
+  test_path.cpp
   )
 
 set(benchmark

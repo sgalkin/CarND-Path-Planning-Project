@@ -9,21 +9,14 @@ set(sources
   coordinates.cpp
   io.cpp
   io.h
-  #   model.cpp
   lane.h
+  lane.cpp
   model.h
   path.h
   planner.h
   planner.cpp
 
-#   model_index.h
-#   model_index.cpp
-#   model_output.h
-#   mpc.cpp
-#   mpc.h
 #   polynomial.h
-#   processor.cpp
-#   processor.h
    protocol.cpp
    protocol.h
    util.h
