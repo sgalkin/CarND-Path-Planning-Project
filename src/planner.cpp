@@ -10,7 +10,7 @@
 #include <iostream>
 
 namespace {
-  
+#if 0  
 tk::spline spline(const Path& p) {
   tk::spline s;
   // TODO: suboptimal one loop will be better
@@ -25,7 +25,8 @@ float v_ref = 0;
 //  size_t clane = (size_t)-1;
 size_t lane = (size_t)1;
   
-bool transit = false;  
+bool transit = false;
+  #endif
 }
 
 std::vector<Vehicle> estimate(const Fusion& f, Timestamp ts, const Map& map) {
@@ -46,21 +47,27 @@ Path Planner::operator()(Model m) {
             << " f:" << m.ego.frenet
             << " ps:" << m.path.size()
             << " ml:" << find_lane(m.ego.frenet.y)
-            << " mlf:" << ml
+            << " mfl:" << ml
             << std::endl;
-  
+  assert(m.path.empty() ||
+         std::fabs(m.destination.y - m.path.rbegin()->y) < 1e-6);
+  assert(m.path.empty() ||
+         std::fabs(m.destination.x - m.path.rbegin()->x) < 1e-6);
+
   auto e = estimate(m.fusion, limits::step*m.path.size(), *map_);
   auto ll = evaluate(m.destination, std::move(e));
   size_t i = 0;
   for(const auto& d: ll) {
-    std::cerr << (ml == i++ ? "* " : "  ")
+    std::cerr << (ml == i++ ? " * " : "   ")
               << "fwl=" << d.forward_limit
               << ";fwv=" << d.forward_velocity
               << ";bwl=" << d.backward_limit
               << ";bwv=" << d.backward_velocity
               << "\n";
   }
-
+  return m.path;
+}
+#if 0
   bool slow_down = false;
   std::vector<bool> lanes(true, 3);
 
@@ -164,3 +171,4 @@ Path Planner::operator()(Model m) {
                   });
   return r;
 }
+#endif

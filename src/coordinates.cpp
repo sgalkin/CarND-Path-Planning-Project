@@ -62,10 +62,11 @@ Point from(Point sd, const Map& m) {
 
 // the x,y,s along the segment
   float seg_s = (sd.x - m.s(wp1));
-  Point seg = m.waypoint(wp1) + seg_s*Point{float(cos(heading)), float(sin(heading))};
+  Point seg = m.waypoint(wp1) + seg_s*Point{std::cos(heading),
+                                            std::sin(heading)};
 
   float perp = heading - M_PI/2;
-  return seg + sd.y*Point{float(cos(perp)), float(sin(perp))};
+  return seg + sd.y*Point{std::cos(perp), std::sin(perp)};
 }
 }
 

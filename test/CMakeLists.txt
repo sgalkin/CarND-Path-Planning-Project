@@ -11,6 +11,7 @@ set(sources
   test_lane.cpp
   test_point.cpp
   test_path.cpp
+  test_planner.cpp
   )
 
 set(benchmark

@@ -5,7 +5,7 @@
 LaneDescriptor::LaneDescriptor()
   : forward_limit(std::numeric_limits<float>::infinity())
   , forward_velocity(std::numeric_limits<float>::infinity())
-  , backward_limit(-std::numeric_limits<float>::infinity())
+  , backward_limit(std::numeric_limits<float>::infinity())
   , backward_velocity(-std::numeric_limits<float>::infinity())
 {}
     
@@ -20,8 +20,8 @@ LaneLimits evaluate(const Point& self, const std::vector<Vehicle>& v) {
       llimits.forward_limit = d;
       llimits.forward_velocity = magnitude(x.velocity);
     }
-    if(d < 0 && d > llimits.backward_limit) {
-      llimits.backward_limit = d;
+    if(d < 0 && -d < llimits.backward_limit) {
+      llimits.backward_limit = -d;
       llimits.backward_velocity = magnitude(x.velocity);
     }
   }

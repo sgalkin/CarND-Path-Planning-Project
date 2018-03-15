@@ -18,3 +18,24 @@ TEST_CASE("Drive") {
     REQUIRE(r.y == Approx(1));
   }
 }
+
+TEST_CASE("Prepend") {
+  SECTION("Long") {
+    Path p{{0, 0}, {1, 1}, {2, 2}};
+    Path q = prepend(p, {0, 0, 0});
+    REQUIRE(q.size() == q.size());
+    for (size_t i = 0; i < q.size(); ++i) {
+      REQUIRE(q[i].x == p[i].x);
+      REQUIRE(q[i].y == p[i].y);
+    }
+  }
+  SECTION("Short") {
+    Path p{{10, 10}};
+    Path q = prepend(p, {0, 0, M_PI/6});
+    REQUIRE(q.size() == 2);
+    REQUIRE(q[0].x == Approx(-std::sqrt(3.f)/2*limits::speed*limits::step.count()));
+    REQUIRE(q[0].y == Approx(-1.f/2*limits::speed*limits::step.count()));
+    REQUIRE(q[1].x == 0);
+    REQUIRE(q[1].y == 0);
+  }
+}

@@ -60,20 +60,19 @@ private:
   const Map& map_;  
 };
 
-inline Path anchor(Heading src, uint8_t lane, uint8_t target, const Map& m) {
-  constexpr float offset = 6;
-  constexpr float horizon = 60;
+inline Path anchor(Heading src, uint8_t target, const Map& m) {
+  constexpr float offset = 3;
+  constexpr float horizon = 90;
   constexpr size_t steps = 5;
 
-  float base = frenet::to(src, m).x;
+  Point f = frenet::to(src, m);
 
   Path p;
   for(size_t i = 0; i < steps; ++i) {
     p.emplace_back(frenet::from(Point{
-      base + offset + i*horizon/(steps - 1),
-      float(steps - 1 - i)/(steps - 1)*lane_center(lane) +
-      float(i)/(steps - 1)*lane_center(target)
-        }, m));
+      f.x + offset + i*horizon/(steps - 1),
+      ((steps - 1 - i)*f.y + i*lane_center(target))/(steps - 1)
+    }, m));
   }
   return p;
 }
