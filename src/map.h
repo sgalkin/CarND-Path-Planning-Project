@@ -6,13 +6,10 @@
 #include <tuple>
 #include <array>
 
-#if __GNUC__
-#pragma GCC diagnostic push ignored "-Wunused-parameter"
-#endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "nanoflann.hpp"
-#if __GNUC__
 #pragma GCC diagnostic pop
-#endif
 
 #include "point.h"
 
