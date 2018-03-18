@@ -10,7 +10,6 @@
 #include "lane.h"
 #include "coordinates.h"
 
-#include "../test/reference_frenet.cpp"
 #include <iostream>
 
 namespace limits {
