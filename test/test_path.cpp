@@ -33,8 +33,8 @@ TEST_CASE("Prepend") {
     Path p{{10, 10}};
     Path q = prepend(p, {0, 0, M_PI/6});
     REQUIRE(q.size() == 2);
-    REQUIRE(q[0].x == Approx(-std::sqrt(3.f)/2*limits::speed*limits::step.count()));
-    REQUIRE(q[0].y == Approx(-1.f/2*limits::speed*limits::step.count()));
+    REQUIRE(q[0].x == Approx(-std::sqrt(3.f)/2*limits::speed_limit*limits::tick.count()));
+    REQUIRE(q[0].y == Approx(-1.f/2*limits::speed_limit*limits::tick.count()));
     REQUIRE(q[1].x == 0);
     REQUIRE(q[1].y == 0);
   }

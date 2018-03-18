@@ -13,7 +13,7 @@
 #include <iostream>
 
 namespace limits {
-  constexpr float safe_minimal_gap = 20;
+  constexpr float safe_minimal_gap = 15;
   constexpr float safe_forward_gap = 30;
   constexpr float safe_backward_gap = 10;
 }
@@ -51,18 +51,22 @@ float cost(size_t self_lane, size_t target_lane, const LaneDescriptor& ld) {
   }
   
   float c = 0;
-  c += 0.25f * (!keep_lane);         // penalty for changings
-  c += 0.02f * (self_lane == 0);     // penalty for using rightest lane
+  // penalty for changings
+  c += 0.25f * (!keep_lane);
+  // penalty for using rightest lane
+  c += 0.25f * (self_lane == 0); // compensate change lane penalty
+  c += 0.02f * (target_lane == 0);
   c += 0.25f * limits::safe_forward_gap / ld.forward_limit;  // take in account free scpace in front
-  c += 0.1f * (ld.forward_limit < 2*limits::safe_forward_gap) * limits::speed / ld.forward_velocity; // take in account speed of the car in front
-  c += 0.05f * limits::safe_backward_gap / ld.backward_limit; // take in account free space behind 
+  c += 0.1f * (ld.forward_limit < 2*limits::safe_forward_gap) * limits::speed_limit / ld.forward_velocity; // take in account speed of the car in front
+//  c += 0.05f * limits::safe_backward_gap / ld.backward_limit; // take in account free space behind 
   return c;
 }
 
 template<typename OutputIterator>
 OutputIterator anchor(Point forigin, float d, const Map& m, OutputIterator o) {
-  constexpr float offset = 0.5 * limits::lane_change.count() * limits::speed;
-  constexpr size_t steps = 4;
+  // able to change lane in desired time even if at 50% of speed_limit
+  constexpr float offset = 1.f/2 * limits::speed_limit * limits::lane_change_time.count();
+  constexpr size_t steps = 5;
   constexpr float horizon = steps * offset;
 
   size_t cnt = 0;
@@ -104,7 +108,7 @@ Path Planner::operator()(Model&& m) {
   } while(false);
 #endif
 //  {
-  auto e = estimate(m.fusion, limits::step*m.path.size(), *map_);
+  auto e = estimate(m.fusion, limits::tick * m.path.size(), *map_);
   auto ll = lane_limits(forigin, std::move(e));
 #if not defined(NDEBUG)
   do {
@@ -180,11 +184,11 @@ Path Planner::operator()(Model&& m) {
 
   /*constexpr */
 //  float x_upper_bound = std::max(30.f, 0.75f * limits::lane_change.count() * vref_);//limits::speed * limits::horizon.count();
-  constexpr float x_upper_bound = 40; //limits::speed * limits::step.count();
-  float y_upper_bound = s(x_upper_bound);
-  float d = magnitude(Point{x_upper_bound, y_upper_bound});
+  float x_upper_bound = (limits::path_size - m.path.size()) * limits::tick.count() * (m.ego.velocity + vref_) / 2;
+//40; //limits::speed * limits::step.count();
+  float d = magnitude(Point{x_upper_bound, float(s(x_upper_bound))});
 
-  float x_step = x_upper_bound/(d/(limits::step.count() * vref_));
+  float x_step = x_upper_bound/(d/(limits::tick.count() * vref_));
     
   Path r{m.path};
   float x = 0;

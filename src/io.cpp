@@ -8,6 +8,10 @@
 using json = nlohmann::json;
 
 namespace {
+constexpr float degrees_to_radians(float degrees) {
+  return M_PI/180.f*degrees;
+}
+  
 json extract(std::string message) {
   auto j = json::parse(std::move(message));
   if (j[0].get<std::string>() != "telemetry") {

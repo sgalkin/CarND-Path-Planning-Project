@@ -25,7 +25,7 @@ inline Path prepend(Path p, const Heading& h) {
   if(p.size() >= 2) return p;
   Path{}.swap(p);
   p.insert(p.begin(), h);
-  p.insert(p.begin(), drive(h, -limits::speed, limits::step));
+  p.insert(p.begin(), drive(h, -limits::speed_limit, limits::tick));
   return p;
 }
 
