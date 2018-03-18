@@ -6,9 +6,13 @@
 #include <tuple>
 #include <array>
 
-#pragma GCC diagnostic ignored "-Wunused-parameter"
+#if defined(__GNUC__)
+#pragma GCC diagnostic push ignored "-Wunused-parameter"
+#endif
 #include "nanoflann.hpp"
+#if defined(__GNUC__)
 #pragma GCC diagnostic pop
+#endif
 
 #include "point.h"
 
@@ -76,7 +80,7 @@ public:
 
   size_t s_lower_bound(float s) const {
     auto it = std::lower_bound(std::begin(s_), std::end(s_), s);
-    return it == std::end(s_) ? s_.size() - 1 : distance(std::begin(s_), it);
+    return it == std::end(s_) ? 0 : distance(std::begin(s_), it);
   }
   
 public:
