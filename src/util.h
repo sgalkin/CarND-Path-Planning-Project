@@ -20,6 +20,7 @@ namespace limits {
     std::chrono::duration_cast<Timestamp>(std::chrono::seconds{3})
   };
   constexpr float speed = mph_to_ms(50); // m/s
+  constexpr float max_speed = 0.99f * speed;
   
   constexpr auto step{
     std::chrono::duration_cast<Timestamp>(std::chrono::milliseconds{20})
@@ -29,5 +30,5 @@ namespace limits {
     std::chrono::duration_cast<Timestamp>(std::chrono::seconds{1})
   }; // s
 
-  constexpr size_t path_size = std::ceil(horizon/step);
+  const size_t path_size = std::ceil(horizon/step);
 }

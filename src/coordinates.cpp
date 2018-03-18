@@ -51,6 +51,10 @@ Point to(Point p, float h, const Map& m) {
   return to(Heading{p.x, p.y, h}, m);
 }
 
+Point to(Point p, Point prev, const Map& m) {
+  return to(p, heading(prev, p), m);
+}
+  
 // Transform from Frenet s,d coordinates to Cartesian x,y
 Point from(Point sd, const Map& m) {
   size_t p = m.s_lower_bound(sd.x);

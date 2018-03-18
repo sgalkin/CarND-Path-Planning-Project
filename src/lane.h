@@ -1,6 +1,8 @@
 #pragma once
 
+#include <limits>
 #include <array>
+
 #include "model.h"
 
 namespace limits {
@@ -16,17 +18,19 @@ constexpr float lane_center(size_t idx) {
   return limits::lane_width/2 + idx*limits::lane_width;
 }
 
+constexpr float lane_center(float d) {
+  return lane_center(find_lane(d));
+}
 
-struct LaneDescriptor {
-  LaneDescriptor();
-    
+
+struct LaneDescriptor {    
   // TODO: use direction velocity not only magnitude
-  float forward_limit;
-  float forward_velocity;
-  float backward_limit;
-  float backward_velocity;
+  float forward_limit{std::numeric_limits<float>::infinity()};
+  float forward_velocity{std::numeric_limits<float>::infinity()};
+  float backward_limit{std::numeric_limits<float>::infinity()};
+  float backward_velocity{-std::numeric_limits<float>::infinity()};
 };
 
 using LaneLimits = std::array<LaneDescriptor, limits::lane_count>;
 
-LaneLimits evaluate(const Point& self, const std::vector<Vehicle>& v);
+LaneLimits lane_limits(const Point& self, const std::vector<Vehicle>& v);

@@ -45,8 +45,8 @@ TEST_CASE("Circle") {
 }
 
 TEST_CASE("Current == 0") {
-  float a = -0.0005/180*M_PI;
-  float r = R - 2;
+  constexpr float a = -0.0005/180*M_PI;
+  constexpr float r = R - 2;
 
   auto p = c + r*Point{float(cos(a)), float(sin(a))}; 
   Heading h{p.x, p.y, a + float(M_PI/2)};
@@ -61,8 +61,8 @@ TEST_CASE("Current == 0") {
 }
 
 TEST_CASE("Current == Last") {
-  float a = -0.25/180*M_PI+2*M_PI;
-  float r = R + 12;
+  constexpr float a = -0.25/180*M_PI+2*M_PI;
+  constexpr float r = R + 12;
 
   auto p = c + r*Point{float(cos(a)), float(sin(a))};
   Heading h{p.x, p.y, a + float(M_PI/2)};
@@ -74,6 +74,27 @@ TEST_CASE("Current == Last") {
   auto xy = frenet::from(f, *m);
   REQUIRE(p.x == Approx(xy.x).margin(10));
   REQUIRE(p.y == Approx(xy.y).margin(10));
+}
+
+TEST_CASE("Forms") {
+//  constexpr float a1 = 33/180*M_PI;
+  constexpr float a2 = 34/180*M_PI;
+  constexpr float r = R - 2;
+//  auto p1 = c + r*Point{float(cos(a1)), float(sin(a1))};
+  auto p2 = c + r*Point{float(cos(a2)), float(sin(a2))};
+  Heading h2{p2, a2 + float(M_PI/2)};
+
+  auto r1 = frenet::to(h2, *m);
+  SECTION("point + angle") {
+    auto r2 = frenet::to(p2, h2.theta, *m);
+    REQUIRE(r2.x == Approx(r1.x));
+    REQUIRE(r2.y == Approx(r2.y));
+  }/*
+  SECTION("point + point") {    
+    auto r3 = frenet::to(p2, p1, *m);
+    REQUIRE(r3.x == Approx(r1.x));
+    REQUIRE(r3.y == Approx(r1.y));
+    }*/
 }
 
 TEST_CASE("Cartesian") {

@@ -1,3 +1,5 @@
+#include <signal.h>
+
 #include <iostream>
 #include <memory>
 #include <stdexcept>
@@ -66,7 +68,12 @@ void run(Config c) {
 }
 }
 
+void stop(int /*sig*/) {
+  exit(0);
+}
+
 int main(int argc, char* argv[]) {
+  signal(SIGINT, &stop);
   try {    
     run(Config(argc, argv));
   } catch(std::exception& e) {

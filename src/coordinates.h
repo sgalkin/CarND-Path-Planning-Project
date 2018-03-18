@@ -6,6 +6,7 @@
 namespace frenet {
 Point to(Heading h, const Map& m);
 Point to(Point p, float h, const Map& m);
+Point to(Point p, Point prev, const Map& m);
 Point from(Point p, const Map& m);
 }
 

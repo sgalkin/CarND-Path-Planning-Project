@@ -9,8 +9,11 @@ TEST_CASE("Lane") {
     REQUIRE(0 == find_lane(limits::lane_width - 2*std::numeric_limits<float>::epsilon()));
     REQUIRE(1 == find_lane(limits::lane_width + 2*std::numeric_limits<float>::epsilon()));
   }
-  SECTION("Center") {
-    REQUIRE(Approx(5*limits::lane_width/2) == lane_center(2));
+  SECTION("Center Index") {
+    REQUIRE(Approx(5*limits::lane_width/2) == lane_center(size_t(2)));
+  }
+  SECTION("Center D") {
+    REQUIRE(Approx(5*limits::lane_width/2) == lane_center(5*limits::lane_width/2*0.8f));
   }
 };
 
@@ -21,7 +24,7 @@ TEST_CASE("LaneDescriptor") {
     Vehicle{{-1, -1}, {0, 1}, {8, 5}},
     Vehicle{{20, 20}, {0, 0}, {3, 10}}
   };
-  auto d = evaluate({3, 6}, f);
+  auto d = lane_limits({3, 6}, f);
   REQUIRE(d[0].forward_limit == std::numeric_limits<float>::infinity());
   REQUIRE(d[0].forward_velocity == std::numeric_limits<float>::infinity());
   REQUIRE(d[0].backward_limit == Approx(5));
