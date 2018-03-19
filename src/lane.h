@@ -34,3 +34,16 @@ struct LaneDescriptor {
 using LaneLimits = std::array<LaneDescriptor, limits::lane_count>;
 
 LaneLimits lane_limits(const Point& self, const std::vector<Vehicle>& v);
+
+class Lane {
+public:
+  explicit Lane(size_t lane);
+
+  size_t id() const { return lane_; }
+  float center() const;
+
+  void update(size_t self_lane, const LaneLimits& limits);
+  
+private:
+  size_t lane_;
+};

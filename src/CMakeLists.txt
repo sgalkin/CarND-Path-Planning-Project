@@ -3,24 +3,28 @@ set(sources
   application.h
   compose.h
   config.h
-  map.h
-  point.h
-  coordinates.h
+  control.h
+  control.cpp
   coordinates.cpp
+  coordinates.h
+  dump.h
   io.cpp
   io.h
-  lane.h
+  fusion.cpp
+  fusion.h
   lane.cpp
+  lane.h
+  limits.h
+  map.h
   model.h
   path.h
-  planner.h
   planner.cpp
-
-#   polynomial.h
-   protocol.cpp
-   protocol.h
-   util.h
-   )
+  planner.h
+  point.h
+  protocol.cpp
+  protocol.h
+  util.h
+)
 
 add_library(lib${CMAKE_PROJECT_NAME} OBJECT ${sources})
 add_executable(${CMAKE_PROJECT_NAME} ${main} $<TARGET_OBJECTS:lib${CMAKE_PROJECT_NAME}>)

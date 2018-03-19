@@ -20,22 +20,6 @@ json extract(std::string message) {
   return j[1];
 }
 
-template<typename U, typename V>
-std::vector<U> to_vector(const std::vector<V>& p, std::function<U(const V&)> x) {
-  std::vector<U> r(p.size());
-  std::transform(begin(p), end(p), begin(r), x);
-  return r;
-}
-
-std::vector<Point> to_vector(const std::vector<float>&& x,
-                             const std::vector<float>&& y) {
-  assert(x.size() == y.size());
-  std::vector<Point> r(x.size());
-  std::transform(begin(x), end(x), begin(y), begin(r),
-                 [](float x, float y) { return Point{x, y}; });
-  return r;
-}
-
 Ego ego(const json& j) {
   return Ego{
     Heading{
@@ -54,7 +38,7 @@ Path path(const json& j) {
   const auto& y = j["previous_path_y"]; 
   if(x.size() != y.size())
     throw std::runtime_error("previous_path_x/previous_path_y size mismatch");
-  return to_vector(x, y);
+  return to_vector<Point>(x, y);
 }
 
 Point destination(const json& j) {
@@ -90,7 +74,7 @@ Model Json::operator()(std::string message) const {
 
 std::string Json::operator()(Path path) const {
   json j;
-  j["next_x"] = extract(path, [](const Point& p) { return p.x; });
-  j["next_y"] = extract(path, [](const Point& p) { return p.y; });
+  j["next_x"] = to_vector(path, [](const Point& p) { return p.x; });
+  j["next_y"] = to_vector(path, [](const Point& p) { return p.y; });
   return j.dump();
 }
