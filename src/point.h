@@ -73,19 +73,19 @@ constexpr inline float distanceSquare(Point x, Point y) {
   return d.x*d.x + d.y*d.y;
 }
 
-constexpr inline float distance(Point x, Point y) {
+inline float distance(Point x, Point y) {
   return std::sqrt(distanceSquare(x, y));
 } 
 
-constexpr inline float heading(Point src) {
+inline float heading(Point src) {
   return std::atan2(src.y, src.x);
 }
 
-constexpr inline float heading(Point src, Point dst) {
+inline float heading(Point src, Point dst) {
   return heading(dst - src);
 }
 
 
-constexpr inline float magnitude(Point p) {
+inline float magnitude(Point p) {
   return distance(p, Point{0, 0});
 }

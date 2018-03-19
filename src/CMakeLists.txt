@@ -23,6 +23,8 @@ set(sources
   point.h
   protocol.cpp
   protocol.h
+  trajectory.h
+  trajectory.cpp
   util.h
 )
 

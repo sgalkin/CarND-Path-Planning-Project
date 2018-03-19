@@ -1,9 +1,15 @@
 #pragma once
 
+#include <cmath>
 #include <chrono>
 #include "util.h"
 
 using Timestamp = std::chrono::duration<float>;
+
+inline constexpr float mph_to_ms(float mph) {
+  constexpr float c = 0.44704;
+  return mph*c;
+}
 
 namespace limits {
   constexpr float safe_minimal_gap = 15;

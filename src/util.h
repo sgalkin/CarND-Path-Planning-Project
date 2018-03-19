@@ -4,11 +4,6 @@
 #include <vector>
 #include <algorithm>
 
-inline constexpr float mph_to_ms(float mph) {
-  constexpr float c = 0.44704;
-  return mph*c;
-}
-
 template<typename C, typename F,
          typename R=std::vector<typename std::result_of<F(const typename C::value_type&)>::type>>
 R to_vector(const C& c, F get) {

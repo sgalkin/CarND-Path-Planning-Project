@@ -16,11 +16,7 @@ inline constexpr Point drive(const Point& p, const Point& v, Timestamp t) {
   return p + Point{drive(v.x, t), drive(v.y, t)};
 }
 
-inline constexpr Point drive(const Heading& p, float v, Timestamp t) {
+inline Point drive(const Heading& p, float v, Timestamp t) {
   return p + v*Point{drive(std::cos(p.theta), t), drive(std::sin(p.theta), t)};
 }
 
-inline Path prepend(Path p, const Heading& h) {
-  if(p.size() >= 2) return p;
-  return Path{drive(h, -limits::speed_limit, limits::tick), h};
-}

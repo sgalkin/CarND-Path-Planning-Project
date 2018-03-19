@@ -17,8 +17,11 @@ TEST_CASE("Drive") {
     REQUIRE(r.x == Approx(1));
     REQUIRE(r.y == Approx(1));
   }
+  SECTION("v, t") {
+    REQUIRE(42 == drive(6, std::chrono::seconds{7}));
+  }
 }
-
+#if 0 // moved to trajectory implementation
 TEST_CASE("Prepend") {
   SECTION("Long") {
     Path p{{0, 0}, {1, 1}, {2, 2}};
@@ -39,3 +42,4 @@ TEST_CASE("Prepend") {
     REQUIRE(q[1].y == 0);
   }
 }
+#endif

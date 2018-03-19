@@ -3,8 +3,9 @@
 #include "model.h"
 #include "map.h"
 #include "lane.h"
+#include "coordinates.h"
 
-#if defined(NDEBUG)
+#if not defined(NDEBUG)
 #define DUMP(...) do { dump(__VA_ARGS__); } while(false)
 #else
 #define DUMP(...) do { } while(false)

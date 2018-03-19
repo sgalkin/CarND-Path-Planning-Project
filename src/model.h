@@ -5,14 +5,14 @@
 #include "point.h"
 
 struct Ego {
-  Ego(Heading h, double v, Point f)
+  Ego(Heading h, float v, Point f)
     : heading(std::move(h))
     , velocity(std::move(v))
     , frenet(std::move(f))
   {}
 
   const Heading heading;
-  const double velocity;
+  const float velocity;
   const Point frenet;
 };
 
