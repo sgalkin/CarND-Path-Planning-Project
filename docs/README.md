@@ -165,7 +165,7 @@ _OUTPUT_: values provided by the c++ program to the simulator
 
 
 * Comfort forward gap (distance to the obstacle in front) - _30 m_
-* Comfort backward gap (distance to the obstacle behind) - _15 m_
+* Comfort backward gap (distance to the obstacle behind) - _10 m_
 * Minimal gap (safety limit) - _15 m_
 
 ### Fusion
