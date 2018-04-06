@@ -2,6 +2,8 @@
 
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3771138441ab4d1b98776bdf05cf0a48)](https://www.codacy.com/app/tech.svg/CarND-T3P1?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sgalkin/CarND-T3P1&amp;utm_campaign=Badge_Grade)
+[![CodeFactor](https://www.codefactor.io/repository/github/sgalkin/carnd-t3p1/badge)](https://www.codefactor.io/repository/github/sgalkin/carnd-t3p1)
+[![BCH compliance](https://bettercodehub.com/edge/badge/sgalkin/CarND-T3P1?branch=master)](https://bettercodehub.com/)
 [![Build Status](https://semaphoreci.com/api/v1/sgalkin/carnd-t3p1/branches/master/shields_badge.svg)](https://semaphoreci.com/sgalkin/carnd-t3p1)
 [![codecov](https://codecov.io/gh/sgalkin/CarND-T3P1/branch/master/graph/badge.svg)](https://codecov.io/gh/sgalkin/CarND-T3P1)
 [![CircleCI](https://circleci.com/gh/sgalkin/CarND-T3P1.svg?style=svg)](https://circleci.com/gh/sgalkin/CarND-T3P1)
